@@ -122,6 +122,28 @@ Capabilities are profile-driven. Each operator profile (`gov`,
 The `capability_router` enforces the boundary; the
 `agent_orchestrator` performs the routing within it.
 
+### Wallet provisioning at signup
+
+Every new account is auto-provisioned with a **secp256k1 wallet**
+on signup: a private key is generated, the compressed public key
+(33 bytes, hex) is stored on the user row as `wallet_address`, and
+the private key is discarded server-side — the user retains
+custody. Pre-v11 accounts are lazy-provisioned on the next
+authenticated `/me` call, and `/me` now returns `walletAddress` in
+the user object so any KURO OS app can identify a peer by wallet
+without a round-trip to KUROPay.
+
+### Cross-app session merger
+
+`GET /api/pay/auth/status` exposes a public, unauthenticated
+endpoint that reports whether the caller carries a valid KURO OS
+session cookie. KuroPay reads this signal at boot and **skips its
+own onboarding screen** for users already authenticated against
+KURO OS. This is the canonical pattern for any future module that
+wants to present a "single sign-on" experience without re-prompting
+the user — the session of record is KURO OS's; modules check status
+and adapt their first-run UI.
+
 ---
 
 ## 4. Streaming
@@ -162,7 +184,77 @@ behalf without explicit confirmation.
 
 ---
 
-## 7. Performance and token economy
+## 7. KUROWallet — cross-app wallet primitive
+
+The wallet provisioned at signup (§3) is not a KuroPay-only
+feature. It is a **first-class KURO OS primitive** — a per-user
+secp256k1 identity that any module can address.
+
+KuroPay surfaces it through two endpoints:
+
+- **`GET /api/pay/wallet/address`** — returns the caller's
+  compressed-secp256k1 pubkey. Identifies the user as a payment
+  destination across the network.
+- **`GET /api/pay/wallet/balance`** — returns the caller's pending
+  $KURO mint-token balances grouped by currency, joined from the
+  payments ledger.
+
+Apps in the KURO OS shell consume these endpoints directly. The
+KuroPay app shows the balance on its welcome screen; the Messages
+app uses the address to identify counterparties for P2P payment
+requests; future apps that need to identify a user as something
+other than "an email address" should reach for the wallet address
+first.
+
+The wallet is **never** moved server-side without an explicit
+authenticated payment action; the server holds only the public
+key. Custody of the private key is the user's; the system is
+designed so loss of the server-side row does not lose the user
+their funds (the on-chain pubkey is recoverable from any signed
+transaction).
+
+---
+
+## 8. MessagesApp — P2P payment integration
+
+`src/components/apps/MessagesApp.jsx` is the messaging app in the
+KURO OS desktop shell. As of this iteration it carries **three new
+payment-aware components** that turn any conversation into a
+payment surface:
+
+- **`PaymentRequestSheet`** — a modal opened from the message
+  composer. Captures `{amount, currency, note}` and emits a
+  structured payment-request message into the thread. Currency
+  defaults to `VND` and supports the SEA majors (THB, IDR, PHP,
+  MYR) plus AUD.
+
+- **`PaymentRequestBubble`** — renders inbound payment-request
+  messages as a distinct bubble shape, with an inline *Pay now*
+  CTA on the recipient's side. The CTA invokes the standard
+  KuroPay `/api/pay/initiate` pipeline; the request UUID is the
+  idempotency anchor.
+
+- **`PaymentReceiptBubble`** — renders the settled-payment
+  confirmation bubble, with the local-currency amount, the
+  payer's identifier, and the timestamp.
+
+The wire format is unchanged: payment messages are normal
+messages whose `body` happens to be JSON with a `__type` of
+`payment_request` or `payment_receipt`. Any client that doesn't
+know about those types renders them as plain text (graceful
+degradation); the desktop shell renders them as bubbles. The
+delivery, read-receipts, and threading semantics all flow through
+the existing Matrix / SMS / email transport stack.
+
+This is the canonical "structured-message-as-action" pattern for
+KURO OS apps: a typed JSON envelope inside the message body,
+recognised by the receiving app's UI, dispatched against the
+existing module backends. Calls, calendar invites, and other
+in-conversation actions are expected to follow the same shape.
+
+---
+
+## 9. Performance and token economy
 
 The pipeline is architected around algorithmic efficiency targets
 (O(n log n) or better on the hot path), strict output formatting
