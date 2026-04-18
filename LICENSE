@@ -1,0 +1,40 @@
+KURO OS — Proprietary License
+
+Copyright (c) 2026 Henry George Lowe-Sevilla / KURO Technologies
+ABN: 45 340 322 909
+
+All rights reserved.
+
+This repository contains the public specification, architecture documentation,
+and example payloads for KURO OS. The implementation source code is NOT
+included in this repository and is NOT licensed for public use, modification,
+or redistribution.
+
+Source code is available to design partners, licensees, and qualified
+research collaborators under a separate commercial agreement.
+
+Without express written permission from KURO Technologies, you may not:
+
+1. Reproduce or distribute the implementation source code of KURO OS.
+2. Use the KURO, KURO OS, KURO::PAY, KURO::GRAB, KURO::WAGER, KURO::FLUX,
+   KURO::HUNT, or NeuroKURO marks in your own products or services.
+3. Hold yourself out as an authorised distributor or licensee of KURO
+   Technologies.
+
+You MAY:
+
+1. Read, reference, and cite this public specification in good-faith
+   technical writing, academic papers, and architectural commentary,
+   provided attribution is given.
+2. Implement compatible client tooling against the documented API
+   surface, subject to applicable rate limits and any contractual
+   conditions agreed at the time of access.
+
+For licensing enquiries, contact:
+
+    Henry George Lowe-Sevilla
+    henry@kuroglass.net
+
+This license does not grant any right or licence under any KURO
+Technologies patent, including without limitation the NeuroKURO
+provisional patent filed with IP Australia on 2 April 2026.

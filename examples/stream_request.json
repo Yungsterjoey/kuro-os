@@ -1,0 +1,37 @@
+{
+  "endpoint": "POST /api/stream",
+  "auth": "Bearer <session-token>  (or guest-cookie for L1 anonymous)",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "text/event-stream",
+    "X-KURO-Profile": "enterprise"
+  },
+  "body": {
+    "session_id": "ses_2NBz7YqA1uH3kP",
+    "messages": [
+      { "role": "user", "content": "Summarise yesterday's audit log and flag any L8 fallbacks." }
+    ],
+    "options": {
+      "thinking": true,
+      "voter_consensus": false,
+      "trace": false,
+      "tools": ["audit_query", "vfs_read"]
+    }
+  },
+  "response_format": {
+    "transport": "Server-Sent Events",
+    "events": [
+      { "event": "layer_enter", "data": { "layer": "L5", "intent": "tool_use" } },
+      { "event": "thinking",    "data": { "delta": "…filtered unless options.thinking=true…" } },
+      { "event": "delta",       "data": { "content": "Yesterday's audit log shows…" } },
+      { "event": "artifact",    "data": { "type": "table", "id": "art_01HZ…" } },
+      { "event": "audit",       "data": { "chain_hash": "sha256:…", "model": "qwen3.5-abliterated:9b" } },
+      { "event": "done",        "data": { "tokens": 412, "latency_ms": 1180 } }
+    ]
+  },
+  "errors": {
+    "429": "iron_dome rate-limit / IP ban",
+    "401": "guest_gate refused — auth required for this profile",
+    "503": "L8 frontier fallback unavailable, local model declined route"
+  }
+}
