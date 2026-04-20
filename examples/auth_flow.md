@@ -1,8 +1,8 @@
-# KURO OS — Auth Flow
+# KURO OS: Auth Flow
 
 KURO OS supports three auth paths that converge on a single session
 table. Every authenticated request carries `req.user.userId` (canonical
-field — never `req.user.id`) once `requireAuth` middleware has run.
+field, never `req.user.id`) once `requireAuth` middleware has run.
 
 ---
 
@@ -81,6 +81,6 @@ refused on any route protected by `requireAuth`.
 - Session rows live in SQLite (WAL).
 - The `kuro_sid` cookie is `httpOnly`, `Secure`, `SameSite=Lax`.
 - Every auth event is written to the L10 audit chain via
-  `securityLog()` — including the negative path (failed OTP, OAuth
+  `securityLog()`, including the negative path (failed OTP, OAuth
   refusal, replay attempt). Forensic replay reconstructs the auth
   history per session.

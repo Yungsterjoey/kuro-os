@@ -1,4 +1,4 @@
-# KURO OS — Directory Tree
+# KURO OS: Directory Tree
 
 This is a public-facing map of the repository layout. File contents are
 *not* included; this document describes what each file or directory is
@@ -18,7 +18,7 @@ kuro-os/
 │   ├── auth/                      Auth, DB schema, OTP, OAuth (Google)
 │   ├── liveedit/                  Streaming controller (SSE via axios)
 │   ├── shadow/
-│   │   └── mnemosyneCache.js      L11 — memory persistence
+│   │   └── mnemosyneCache.js      L11 memory persistence
 │   ├── vision/                    GPU mutex, vision orchestrator, vision routes
 │   ├── tools/                     Context router, VFS tools, policies
 │   ├── vfs/                       Virtual filesystem
@@ -30,20 +30,20 @@ kuro-os/
 │   ├── observability/             Metrics + tracing
 │   ├── security/                  Security hardening primitives
 │   ├── stripe/                    Stripe billing integration
-│   ├── iron_dome.js               L0 — rate limiting, IP banning
-│   ├── guest_gate.js              L1 — anonymous session gate
-│   ├── memory.js                  L2 — session memory retrieval
-│   ├── context_reactor.js         L3 — dynamic context injection
-│   ├── bloodhound.js              L4 — debug/trace mode
-│   ├── iff_gate.js                L5a — friend-or-foe / intent gate
-│   ├── semantic_router.js         L5b — intent routing + temperature
-│   ├── voter_layer.js             L6 — multi-model consensus
-│   ├── thinking_stream.js         L7 — extended reasoning + think-block filter
+│   ├── iron_dome.js               L0 rate limiting, IP banning
+│   ├── guest_gate.js              L1 anonymous session gate
+│   ├── memory.js                  L2 session memory retrieval
+│   ├── context_reactor.js         L3 dynamic context injection
+│   ├── bloodhound.js              L4 debug/trace mode
+│   ├── iff_gate.js                L5a friend-or-foe / intent gate
+│   ├── semantic_router.js         L5b intent routing + temperature
+│   ├── voter_layer.js             L6 multi-model consensus
+│   ├── thinking_stream.js         L7 extended reasoning + think-block filter
 │   ├── synthesis_layer.js         Model synthesis pipeline
-│   ├── frontier_assist.js         L8 — Anthropic API fallback
-│   ├── output_enhancer.js         L9a — artifact extraction
-│   ├── maat_refiner.js            L9b — output purification (purify())
-│   ├── audit_chain.js             L10 — tamper-evident log
+│   ├── frontier_assist.js         L8 Anthropic API fallback
+│   ├── output_enhancer.js         L9a artifact extraction
+│   ├── maat_refiner.js            L9b output purification (purify())
+│   ├── audit_chain.js             L10 tamper-evident log
 │   ├── agent_orchestrator.js      Agent routing + skill gates
 │   ├── fire_control.js            Safety circuit breaker
 │   ├── edubba_archive.js          recall() / inscribe() semantic memory
@@ -73,7 +73,7 @@ kuro-os/
 │   ├── msf.js                     Mid-sleep function computation
 │   ├── sandd_validation.js        SANDD dataset (N=368, MAE=0.31h)
 │   ├── mmash_validation.js        MMASH dataset (N=20, MAE=0.29h)
-│   ├── VALIDATION_SUMMARY.md      Ground truth results — never edited
+│   ├── VALIDATION_SUMMARY.md      Ground truth results; never edited
 │   ├── RESEARCH_BRIEF.md          Research context
 │   ├── paper_draft.md             Manuscript draft
 │   └── README.md

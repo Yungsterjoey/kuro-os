@@ -18,7 +18,7 @@ use as the substrate for every other product in the KURO portfolio.
 | Layer | Purpose |
 |---|---|
 | **Hardware** | RTX 5090 32GB + TensorDock V100 satellite |
-| **Inference** | Local Ollama — `huihui-ai/qwen3.5-abliterated:9b` primary, frontier API as fallback |
+| **Inference** | Local Ollama. `huihui-ai/qwen3.5-abliterated:9b` primary, Anthropic frontier as fallback |
 | **Server** | Node.js + Express (CommonJS), SQLite via `better-sqlite3` (WAL) |
 | **Frontend** | React 18 + Vite, served as a desktop-style OS shell |
 | **Process supervisor** | PM2 (`kuro-core`, `kuro-sandbox`) |
@@ -37,18 +37,18 @@ Authentication, billing, audit, and memory all live on the operator's box.
                                         │   POST /api/stream
                                         ▼
    ┌────────────────────────────────────────────────────────────────┐
-   │                    L0  iron_dome     — rate / abuse            │
-   │                    L1  guest_gate    — anon session            │
-   │                    L2  memory        — session history         │
-   │                    L3  context_reactor — time/profile/tools    │
-   │                    L4  bloodhound    — debug / trace           │
+   │                    L0  iron_dome     - rate / abuse            │
+   │                    L1  guest_gate    - anon session            │
+   │                    L2  memory        - session history         │
+   │                    L3  context_reactor - time/profile/tools    │
+   │                    L4  bloodhound    - debug / trace           │
    │                    L5  iff_gate + semantic_router              │
-   │                    L6  voter_layer   — multi-model consensus   │
-   │                    L7  thinking_stream — extended reasoning    │
-   │                    L8  frontier_assist — Anthropic fallback    │
+   │                    L6  voter_layer   - multi-model consensus   │
+   │                    L7  thinking_stream - extended reasoning    │
+   │                    L8  frontier_assist - Anthropic fallback    │
    │                    L9  output_enhancer + maat_refiner          │
-   │                    L10 audit_chain   — tamper-evident log      │
-   │                    L11 mnemosyneCache — memory persistence     │
+   │                    L10 audit_chain   - tamper-evident log      │
+   │                    L11 mnemosyneCache - memory persistence     │
    └────────────────────────────────────────┬───────────────────────┘
                                             │
                 ┌───────────────────────────┼───────────────────────────┐

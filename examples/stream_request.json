@@ -31,7 +31,7 @@
   },
   "errors": {
     "429": "iron_dome rate-limit / IP ban",
-    "401": "guest_gate refused — auth required for this profile",
+    "401": "guest_gate refused: auth required for this profile",
     "503": "L8 frontier fallback unavailable, local model declined route"
   }
 }

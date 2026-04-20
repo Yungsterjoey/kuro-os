@@ -1,4 +1,4 @@
-# KURO OS — Architecture
+# KURO OS: Architecture
 
 This document describes the runtime architecture of KURO OS in prose. No
 implementation is included; the source lives in a private repository
@@ -11,7 +11,7 @@ available to design partners.
 A single Express HTTP server (`kuro-core`) listens on port 3000. A
 sidecar process (`kuro-sandbox`) listens on `127.0.0.1:3101` and is the
 only host where untrusted code execution is allowed. Both processes are
-supervised by PM2 and never auto-restarted by the agent — restarts are
+supervised by PM2 and never auto-restarted by the agent. Restarts are
 always operator-initiated.
 
 State is held in a SQLite database opened in WAL mode for write
@@ -33,75 +33,75 @@ twelve layers in order. Every layer is loaded under `try/catch`; a layer
 that fails to load produces a degraded but functional pipeline rather
 than a crashed server.
 
-### L0 — iron_dome
+### L0: iron_dome
 
 Rate limiting and IP banning. Operates on the raw request before any
 session is established. Repeat abuse promotes an IP from soft-throttle
 to hard-block, with a TTL.
 
-### L1 — guest_gate
+### L1: guest_gate
 
 Anonymous session provisioning for unauthenticated traffic. Guest
 sessions are ephemeral and never granted write capability against the
 ledger, audit chain, or memory store.
 
-### L2 — memory
+### L2: memory
 
 Session memory retrieval. The previous turns of the conversation are
 re-hydrated for the model. A separate persistence layer (L11) writes
 back at the end of the request.
 
-### L3 — context_reactor
+### L3: context_reactor
 
 Dynamic context injection. Time of day, operator profile, and the set of
 tools currently authorised for the session are folded into the prompt.
 This layer is responsible for ensuring the model sees *operational
 context*, not just user input.
 
-### L4 — bloodhound
+### L4: bloodhound
 
 Debug and trace mode. When enabled, every downstream layer emits a
 structured trace event, surfacing as a debug stream alongside the
 primary response. Off by default in production.
 
-### L5 — iff_gate + semantic_router
+### L5: iff_gate + semantic_router
 
 Intent classification. `iff_gate` answers a friend-or-foe question (is
 this prompt allowed at all?); `semantic_router` then picks a downstream
-*temperature* and *route* — fast lookup, deliberative reasoning, tool
+*temperature* and *route*: fast lookup, deliberative reasoning, tool
 use, or a domain-specific module like KURO::PAY.
 
-### L6 — voter_layer
+### L6: voter_layer
 
 Optional multi-model consensus. When the route requires high confidence,
 several model heads are sampled in parallel and a voting policy selects
 the winning continuation. Disabled by default for latency reasons.
 
-### L7 — thinking_stream
+### L7: thinking_stream
 
 Extended reasoning. Produces a think-block that is streamed to the UI
 but filtered from the user-visible response unless explicitly requested.
 
-### L8 — frontier_assist
+### L8: frontier_assist
 
 Anthropic API fallback. If the local model declines or under-performs on
 a given route, this layer dispatches to a frontier API provider and
 re-enters the pipeline at L9.
 
-### L9 — output_enhancer + maat_refiner
+### L9: output_enhancer + maat_refiner
 
 Artifact extraction (`output_enhancer`) and output purification
 (`maat_refiner.purify()`). Code blocks, diagrams, and downloadable
 artifacts are split out of the prose stream and offered to the frontend
 as separately-renderable objects.
 
-### L10 — audit_chain
+### L10: audit_chain
 
 Tamper-evident log. Each request produces a hash-linked record of
 inputs, intermediate decisions, model identity, and output. This is the
 forensic backbone of the operating system.
 
-### L11 — mnemosyneCache
+### L11: mnemosyneCache
 
 Memory persistence. The session memory updated in L2 is durably written
 back here. `edubba_archive.recall()` and `inscribe()` provide semantic
@@ -127,7 +127,7 @@ The `capability_router` enforces the boundary; the
 Every new account is auto-provisioned with a **secp256k1 wallet**
 on signup: a private key is generated, the compressed public key
 (33 bytes, hex) is stored on the user row as `wallet_address`, and
-the private key is discarded server-side — the user retains
+the private key is discarded server-side; the user retains
 custody. Pre-v11 accounts are lazy-provisioned on the next
 authenticated `/me` call, and `/me` now returns `walletAddress` in
 the user object so any KURO OS app can identify a peer by wallet
@@ -141,7 +141,7 @@ session cookie. KuroPay reads this signal at boot and **skips its
 own onboarding screen** for users already authenticated against
 KURO OS. This is the canonical pattern for any future module that
 wants to present a "single sign-on" experience without re-prompting
-the user — the session of record is KURO OS's; modules check status
+the user. The session of record is KURO OS's; modules check status
 and adapt their first-run UI.
 
 ---
@@ -149,7 +149,7 @@ and adapt their first-run UI.
 ## 4. Streaming
 
 Server-sent events are produced with `axios` in `responseType: 'stream'`
-mode. The Node Web Streams API is **not** used for SSE — empirical
+mode. The Node Web Streams API is **not** used for SSE. Empirical
 backpressure issues motivated the choice of `axios` as the canonical
 streaming HTTP client.
 
@@ -184,18 +184,18 @@ behalf without explicit confirmation.
 
 ---
 
-## 7. KUROWallet — cross-app wallet primitive
+## 7. KUROWallet: cross-app wallet primitive
 
 The wallet provisioned at signup (§3) is not a KuroPay-only
-feature. It is a **first-class KURO OS primitive** — a per-user
+feature. It is a **first-class KURO OS primitive**: a per-user
 secp256k1 identity that any module can address.
 
 KuroPay surfaces it through two endpoints:
 
-- **`GET /api/pay/wallet/address`** — returns the caller's
+- **`GET /api/pay/wallet/address`**: returns the caller's
   compressed-secp256k1 pubkey. Identifies the user as a payment
   destination across the network.
-- **`GET /api/pay/wallet/balance`** — returns the caller's pending
+- **`GET /api/pay/wallet/balance`**: returns the caller's pending
   $KURO mint-token balances grouped by currency, joined from the
   payments ledger.
 
@@ -215,26 +215,26 @@ transaction).
 
 ---
 
-## 8. MessagesApp — P2P payment integration
+## 8. MessagesApp: P2P payment integration
 
 `src/components/apps/MessagesApp.jsx` is the messaging app in the
 KURO OS desktop shell. As of this iteration it carries **three new
 payment-aware components** that turn any conversation into a
 payment surface:
 
-- **`PaymentRequestSheet`** — a modal opened from the message
+- **`PaymentRequestSheet`**: a modal opened from the message
   composer. Captures `{amount, currency, note}` and emits a
   structured payment-request message into the thread. Currency
   defaults to `VND` and supports the SEA majors (THB, IDR, PHP,
   MYR) plus AUD.
 
-- **`PaymentRequestBubble`** — renders inbound payment-request
+- **`PaymentRequestBubble`**: renders inbound payment-request
   messages as a distinct bubble shape, with an inline *Pay now*
   CTA on the recipient's side. The CTA invokes the standard
   KuroPay `/api/pay/initiate` pipeline; the request UUID is the
   idempotency anchor.
 
-- **`PaymentReceiptBubble`** — renders the settled-payment
+- **`PaymentReceiptBubble`**: renders the settled-payment
   confirmation bubble, with the local-currency amount, the
   payer's identifier, and the timestamp.
 
